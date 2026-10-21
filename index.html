@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Robot Walking Simulator</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#edf2fb;color:#172443;font:15px system-ui,Segoe UI,sans-serif}header{padding:22px 4%;color:#fff;background:linear-gradient(110deg,#112b5d,#443780);display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}h1{margin:0;font-size:clamp(23px,3vw,34px)}header p{margin:5px 0 0;color:#dbeafe}.actions{display:flex;gap:8px}button,select{font:inherit;font-weight:650;border:1px solid #d7e1f1;border-radius:9px;background:#fff;color:#1d2d4f;padding:10px 12px;cursor:pointer}.actions button{background:#ffffff18;color:white;border-color:#ffffff30}main{max-width:1450px;margin:auto;padding:18px;display:grid;gap:16px}.layout{display:grid;grid-template-columns:1fr 1.15fr .62fr;gap:16px}.panel{background:white;border:1px solid #dfe7f4;border-radius:15px;padding:15px;box-shadow:0 5px 18px #19386b08;min-width:0}.title{display:flex;justify-content:space-between;align-items:center;gap:8px;margin:0 0 13px;font-size:19px}textarea{width:100%;height:320px;resize:vertical;border:1px solid #cedbf0;border-radius:10px;padding:13px;font:15px/1.7 ui-monospace,Consolas,monospace;color:#172554;outline-color:#6088ed}.primary{margin-top:10px;width:100%;padding:14px;background:#15975b;color:white;border:0;font-size:17px}.row{display:flex;gap:8px;margin-top:9px}.row button{flex:1;font-size:13px;padding:9px 5px}.gridwrap{display:grid;place-items:center;min-height:340px}.grid{width:min(100%,460px);aspect-ratio:1;min-height:280px;display:grid;background:white;border-top:1px solid #d5deeb;border-left:1px solid #d5deeb}.cell{border-right:1px solid #d5deeb;border-bottom:1px solid #d5deeb;display:grid;place-items:center;min-width:0;min-height:0;font-size:clamp(10px,1.6vw,20px)}.cell.path{background:#dbeafe}.cell.start{box-shadow:inset 0 0 0 2px #f87171}.cell.robot{background:#bfdbfe;z-index:1}.side{display:grid;gap:14px;align-content:start}.stat{display:flex;justify-content:space-between;gap:8px;padding:11px 0;border-bottom:1px solid #e7edf6}.stat:last-child{border:0}.bottom{display:grid;grid-template-columns:1fr 1fr;gap:16px}.examples{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}.example{text-align:left;background:#f6f9ff;min-height:105px}.example b{display:block;color:#2457ce;margin-bottom:7px}.example small{white-space:pre-wrap;font:11px/1.5 ui-monospace,monospace;color:#52627e}.console{background:#101b2b;color:#e2e8f0;padding:13px;border-radius:10px;min-height:150px;max-height:210px;overflow:auto;white-space:pre-wrap;font:13px/1.7 ui-monospace,monospace}.ok{color:#86efac}.err{color:#fca5a5}.muted{color:#64748b;font-size:13px}@media(max-width:950px){.layout{grid-template-columns:1fr 1fr}.side{grid-column:1/-1;grid-template-columns:1fr 1fr}.bottom{grid-template-columns:1fr}}@media(max-width:600px){main{padding:10px}.layout,.side{grid-template-columns:1fr}.side{grid-column:auto}.examples{grid-template-columns:1fr 1fr}textarea{height:240px}}
+</style></head><body>
+<header><div><h1>🤖 Robot Walking Simulator</h1><p>Write commands. Run your program. Visualize the path.</p></div><div class="actions"><button id="about">About</button><button id="jump">Examples</button><button id="help">How to use</button></div></header>
+<main><section class="layout">
+<div class="panel"><h2 class="title">🤖 Robot Program <button id="clear">Clear</button></h2><textarea id="program" spellcheck="false">REPEAT 4 {
+  MOVE 3;
+  TURN RIGHT;
+}</textarea><button class="primary" id="run">▶ Run Program</button><div class="row"><button id="reset">↻ Reset</button><button id="load">↓ Load Example</button><button id="clearall">⌫ Clear All</button></div><p class="muted">MOVE n; · TURN LEFT; · TURN RIGHT; · REPEAT n { ... }</p></div>
+<div class="panel"><h2 class="title">Grid World <span class="muted">Size <select id="size"><option>11</option><option selected>15</option><option>19</option><option>21</option></select></span></h2><div class="gridwrap"><div id="grid" class="grid"></div></div></div>
+<div class="side"><div class="panel"><h2 class="title">📍 Robot Status</h2><div class="stat"><span>Position</span><b id="pos">(0, 0)</b></div><div class="stat"><span>Facing</span><b id="face">▲ Up</b></div><div class="stat"><span>Steps</span><b id="steps">0</b></div><div class="stat"><span>Commands</span><b id="cmds">0</b></div></div><div class="panel"><h2 class="title">Legend</h2><p>🤖 Robot position</p><p>🔵 Path taken</p><p>🔴 Start position</p><p>🟢 Current position</p></div></div></section>
+<section class="bottom"><div class="panel" id="examples"><h2 class="title">Examples</h2><div class="examples"><button class="example" data-e="square"><b>Square</b><small>REPEAT 4 {\n MOVE 3;\n TURN RIGHT;\n}</small></button><button class="example" data-e="stair"><b>Staircase</b><small>REPEAT 3 {\n MOVE 2;\n TURN RIGHT;\n}</small></button><button class="example" data-e="nested"><b>Nested loops</b><small>REPEAT 2 {\n REPEAT 3 {\n MOVE 1;\n }\n TURN RIGHT;\n}</small></button><button class="example" data-e="spiral"><b>Spiral</b><small>REPEAT 4 {\n MOVE 2;\n TURN RIGHT;\n MOVE 1;\n TURN RIGHT;\n}</small></button></div></div><div class="panel"><h2 class="title">Output <button id="clearout">Clear</button></h2><div id="out" class="console">› Robot simulator ready!\n› Enter a program and click Run.\n› Nested REPEAT blocks are supported.</div></div></section></main>
+<footer class="muted" style="text-align:center;padding:0 12px 22px">Browser-based demonstration; execution runs locally in JavaScript.</footer>
+<script>
+const $=id=>document.getElementById(id), ex={square:'REPEAT 4 {\n  MOVE 3;\n  TURN RIGHT;\n}',stair:'REPEAT 3 {\n  MOVE 2;\n  TURN RIGHT;\n}',nested:'REPEAT 2 {\n  REPEAT 3 {\n    MOVE 1;\n  }\n  TURN RIGHT;\n}',spiral:'REPEAT 4 {\n  MOVE 2;\n  TURN RIGHT;\n  MOVE 1;\n  TURN RIGHT;\n}'};
+const dirs=[{x:0,y:1,n:'Up',i:'▲'},{x:1,y:0,n:'Right',i:'▶'},{x:0,y:-1,n:'Down',i:'▼'},{x:-1,y:0,n:'Left',i:'◀'}];let s;
+function reset(){s={x:0,y:0,d:0,steps:0,cmds:0,path:[[0,0]]};draw()}
+function tokenize(src){let re=/\s+|#[^\n]*|\/\/[^\n]*|[A-Za-z_]+|\d+|[{};]/gy,a=[],i=0;while(i<src.length){re.lastIndex=i;let m=re.exec(src);if(!m)throw Error('Unexpected character: '+src[i]);i=re.lastIndex;if(/^\s/.test(m[0])||m[0].startsWith('#')||m[0].startsWith('//'))continue;a.push(m[0].toUpperCase())}return a}
+function parse(src){let t=tokenize(src),i=0;function eat(v){if(t[i]!==v)throw Error('Expected '+v+', got '+(t[i]||'end of program'));i++}function num(){let v=t[i++];if(!/^\d+$/.test(v||''))throw Error('Expected a number');let n=+v;if(n>1000)throw Error('Numbers must be 1000 or less');return n}function block(nested=false){let a=[];while(i<t.length&&t[i]!=='}'){if(t[i]==='MOVE'){i++;let n=num();eat(';');a.push({t:'m',n})}else if(t[i]==='TURN'){i++;let d=t[i++];if(!['LEFT','RIGHT'].includes(d))throw Error('Expected LEFT or RIGHT after TURN');eat(';');a.push({t:'t',d})}else if(t[i]==='REPEAT'){i++;let n=num();eat('{');let b=block(true);eat('}');a.push({t:'r',n,b})}else throw Error('Unknown command: '+t[i]);if(a.length>5000)throw Error('Too many commands')}if(nested&&i>=t.length)throw Error('Missing closing brace');return a}let a=block();if(i<t.length)throw Error('Unexpected token '+t[i]);return a}
+function execute(nodes){function go(a){for(let n of a){if(++s.cmds>10000)throw Error('Execution limit reached');if(n.t==='m'){for(let k=0;k<n.n;k++){s.x+=dirs[s.d].x;s.y+=dirs[s.d].y;s.steps++;s.path.push([s.x,s.y]);if(Math.abs(s.x)>50||Math.abs(s.y)>50)throw Error('Robot moved too far (limit ±50)')}}else if(n.t==='t')s.d=(s.d+(n.d==='RIGHT'?1:3))%4;else for(let k=0;k<n.n;k++)go(n.b)}}go(nodes)}
+function draw(){
+ const z=Number($('size').value)||15, min=-Math.floor(z/2), max=min+z-1, g=$('grid');
+ const visited=new Set((s.path||[]).map(p=>p.join(',')));
+ g.replaceChildren();
+ g.style.gridTemplateColumns=`repeat(${z}, minmax(0, 1fr))`;
+ g.style.gridTemplateRows=`repeat(${z}, minmax(0, 1fr))`;
+ for(let y=max;y>=min;y--){
+  for(let x=min;x<=max;x++){
+   const c=document.createElement('div');
+   c.className='cell';
+   if(visited.has(`${x},${y}`)) c.classList.add('path');
+   if(x===0&&y===0) c.classList.add('start');
+   if(x===s.x&&y===s.y){
+    c.classList.add('robot');
+    c.textContent='🤖';
+    c.title=`Robot at (${x}, ${y}), facing ${dirs[s.d].n}`;
+   }
+   g.appendChild(c);
+  }
+ }
+ $('pos').textContent=`(${s.x}, ${s.y})`;
+ $('face').textContent=dirs[s.d].i+' '+dirs[s.d].n;
+ $('steps').textContent=s.steps;
+ $('cmds').textContent=s.cmds;
+}
+function log(t,cls=''){let d=document.createElement('div');d.textContent='› '+t;if(cls)d.className=cls;$('out').append(d);$('out').scrollTop=$('out').scrollHeight}
+function run(){reset();$('out').textContent='';try{execute(parse($('program').value));draw();log(`SUCCESS: ended at (${s.x}, ${s.y}), facing ${dirs[s.d].n}.`,'ok');log(`${s.steps} movement steps; ${s.cmds} commands executed.`)}catch(e){draw();log('ERROR: '+e.message,'err')}}
+function load(k){$('program').value=ex[k]||ex.square;$('out').textContent='';log(k+' example loaded. Click Run Program.')}
+$('run').onclick=run;$('reset').onclick=()=>{reset();$('out').textContent='';log('Robot reset.')};$('clear').onclick=()=>$('program').value='';$('clearall').onclick=()=>{$('program').value='';reset();$('out').textContent='';log('Cleared.')};$('load').onclick=()=>load('square');$('clearout').onclick=()=>$('out').textContent='';$('size').onchange=draw;document.querySelectorAll('[data-e]').forEach(b=>b.onclick=()=>load(b.dataset.e));$('jump').onclick=()=>$('examples').scrollIntoView({behavior:'smooth'});$('help').onclick=()=>alert('MOVE n; moves forward. TURN LEFT; and TURN RIGHT; rotate 90 degrees. REPEAT n { ... } repeats a block. Example: REPEAT 4 { MOVE 3; TURN RIGHT; }');$('about').onclick=()=>alert('This browser demo interprets robot commands in JavaScript. It is separate from any C/Flex/Bison implementation.');reset();
+</script></body></html>
